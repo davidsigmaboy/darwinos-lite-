@@ -25,6 +25,14 @@ make SDKROOT="$SDKROOT" ARCH_CONFIGS="$ARCH_CONFIGS" \
      MACHINE_CONFIGS="$MACHINE_CONFIGS" KERNEL_CONFIGS="$KERNEL_CONFIGS" \
      DSTROOT="$OUT" "$@" > "$OUT/build.log" 2>&1
 RC=$?
-tail -n 40 "$OUT/build.log"
+if [ $RC -ne 0 ]; then
+  echo "=== первая ошибка (контекст) ==="
+  grep -nE "error:|\*\*\*|fatal|No such file|not found|Undefined|cannot" "$OUT/build.log" \
+    | grep -vE "ctfconvert|ctfmerge|ctf_insert|xcrun: error" | head -n 5
+  N=$(grep -nE "error:|\*\*\*" "$OUT/build.log" | grep -vE "ctf|xcrun: error" | head -n 1 | cut -d: -f1)
+  [ -n "$N" ] && sed -n "$((N>30?N-30:1)),$((N+5))p" "$OUT/build.log"
+  echo "=== конец лога ==="
+  tail -n 25 "$OUT/build.log"
+fi
 echo "make rc=$RC (полный лог: build/build.log)"
 exit $RC
