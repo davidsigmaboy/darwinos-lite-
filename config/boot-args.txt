@@ -1,0 +1,1 @@
+-v serial=3 debug=0x14e cs_enforcement_disable=1 amfi_get_out_of_my_way=1 amfi=0xff rd=disk0s1 cpus=1

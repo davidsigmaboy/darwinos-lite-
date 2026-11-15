@@ -1,0 +1,32 @@
+name: build-darwinos-lite6
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch sources
+        run: sh scripts/fetch-sources.sh
+
+      - name: Build XNU (arm64)
+        # Сборка xnu-4570 на новых Xcode может падать: смотри лог и правь патчами.
+        run: sh scripts/build-xnu.sh
+        continue-on-error: true
+
+      - name: Build rootfs
+        run: sh scripts/make-rootfs.sh
+        continue-on-error: true
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: darwinos-lite6-build
+          path: build/
+          if-no-files-found: warn
