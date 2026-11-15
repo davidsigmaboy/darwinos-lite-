@@ -13,13 +13,18 @@ for p in "$ROOT"/patches/*.patch; do
 done
 
 # Для QEMU положи platform/pe_virt.c в src/xnu/pexpert/arm/ (см. patches/NOTES.md п.4).
-export SDKROOT="${SDKROOT:-macosx}"
+# arm64-конфиги XNU допустимы только для iOS-платформы (PLATFORM=iPhoneOS), поэтому iphoneos SDK.
+export SDKROOT="${SDKROOT:-iphoneos}"
 export ARCH_CONFIGS="${ARCH_CONFIGS:-ARM64}"
 export MACHINE_CONFIGS="${MACHINE_CONFIGS:-T8002}"   # свой конфиг для virt: см. NOTES
 export KERNEL_CONFIGS="${KERNEL_CONFIGS:-RELEASE}"
 
 cd "$XNU"
+set +e
 make SDKROOT="$SDKROOT" ARCH_CONFIGS="$ARCH_CONFIGS" \
      MACHINE_CONFIGS="$MACHINE_CONFIGS" KERNEL_CONFIGS="$KERNEL_CONFIGS" \
-     DSTROOT="$OUT" "$@"
-echo "Готово: $OUT"
+     DSTROOT="$OUT" "$@" > "$OUT/build.log" 2>&1
+RC=$?
+tail -n 40 "$OUT/build.log"
+echo "make rc=$RC (полный лог: build/build.log)"
+exit $RC
