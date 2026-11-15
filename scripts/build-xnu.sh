@@ -13,10 +13,10 @@ for p in "$ROOT"/patches/*.patch; do
 done
 
 # Для QEMU положи platform/pe_virt.c в src/xnu/pexpert/arm/ (см. patches/NOTES.md п.4).
-# arm64-конфиги XNU допустимы только для iOS-платформы (PLATFORM=iPhoneOS), поэтому iphoneos SDK.
-export SDKROOT="${SDKROOT:-iphoneos}"
+# arm64-конфиг добавлен патчем patches/0001-arm64-makedefs.patch (платформа MacOSX, SDK macosx).
+export SDKROOT="${SDKROOT:-macosx}"
 export ARCH_CONFIGS="${ARCH_CONFIGS:-ARM64}"
-export MACHINE_CONFIGS="${MACHINE_CONFIGS:-T8002}"   # свой конфиг для virt: см. NOTES
+export MACHINE_CONFIGS="${MACHINE_CONFIGS:-NONE}"   # свой конфиг для virt: см. NOTES
 export KERNEL_CONFIGS="${KERNEL_CONFIGS:-RELEASE}"
 
 cd "$XNU"
