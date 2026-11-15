@@ -1,5 +1,5 @@
 diff --git a/makedefs/MakeInc.def b/makedefs/MakeInc.def
-index dcba4ab..303d4cf 100644
+index dcba4ab..78b8473 100644
 --- a/makedefs/MakeInc.def
 +++ b/makedefs/MakeInc.def
 @@ -9,7 +9,7 @@
@@ -32,7 +32,7 @@ index dcba4ab..303d4cf 100644
  CFLAGS_X86_64H = $(CFLAGS_X86_64)
  
 +# --- Darwinos lite6: arm64 ---
-+CFLAGS_ARM64	= -D__arm64__ -DARM64 -DLP64 -DARM_BOARD_CONFIG_T8002 -mkernel -Wno-missing-include-dirs -Wno-error
++CFLAGS_ARM64	= -D__arm64__ -DARM64 -DLP64 -DARM_BOARD_CONFIG_VIRT -mkernel -Wno-missing-include-dirs -Wno-error
 +CFLAGS_RELEASEARM64 = -O2
 +CFLAGS_DEVELOPMENTARM64 = -O2
 +CFLAGS_KASANARM64 = $(CFLAGS_DEVELOPMENTARM64)

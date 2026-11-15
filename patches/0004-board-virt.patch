@@ -1,0 +1,20 @@
+diff --git a/pexpert/pexpert/arm/board_config.h b/pexpert/pexpert/arm/board_config.h
+index 13ccdb5..2320413 100644
+--- a/pexpert/pexpert/arm/board_config.h
++++ b/pexpert/pexpert/arm/board_config.h
+@@ -5,6 +5,15 @@
+ #ifndef _PEXPERT_ARM_BOARD_CONFIG_H
+ #define _PEXPERT_ARM_BOARD_CONFIG_H
+ 
++/* Darwinos lite6: generic arm64 board (QEMU virt / bring-up) */
++#ifdef ARM_BOARD_CONFIG_VIRT
++#define APPLETWISTER
++#define ARM_BOARD_WFE_TIMEOUT_NS 1000
++#define __ARM_L2CACHE_SIZE_LOG__ 20
++#define ARM_BOARD_CLASS_VIRT
++#define PEXPERT_NO_3X_IMAGES	1
++#endif  /* ARM_BOARD_CONFIG_VIRT */
++
+ #ifdef ARM_BOARD_CONFIG_S7002
+ #define ARMA7
+ #define __XNU_UP__
