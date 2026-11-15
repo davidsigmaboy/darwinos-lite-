@@ -23,7 +23,7 @@ cd "$XNU"
 set +e
 make SDKROOT="$SDKROOT" ARCH_CONFIGS="$ARCH_CONFIGS" \
      MACHINE_CONFIGS="$MACHINE_CONFIGS" KERNEL_CONFIGS="$KERNEL_CONFIGS" \
-     DSTROOT="$OUT" "$@" > "$OUT/build.log" 2>&1
+     DSTROOT="$OUT" BUILD_WERROR=0 "$@" > "$OUT/build.log" 2>&1
 RC=$?
 if [ $RC -ne 0 ]; then
   echo "=== первая ошибка (контекст) ==="
