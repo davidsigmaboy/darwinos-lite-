@@ -1,0 +1,28 @@
+diff --git a/libkern/conf/files.arm64 b/libkern/conf/files.arm64
+new file mode 100644
+index 0000000..25fa31c
+--- /dev/null
++++ b/libkern/conf/files.arm64
+@@ -0,0 +1 @@
++# Darwinos lite6: libkern has no arm64-specific sources in the open-source tree.
+diff --git a/san/conf/Makefile.arm64 b/san/conf/Makefile.arm64
+new file mode 100644
+index 0000000..3e0ea48
+--- /dev/null
++++ b/san/conf/Makefile.arm64
+@@ -0,0 +1,7 @@
++######################################################################
++#BEGIN	Machine dependent Makefile fragment for arm64
++######################################################################
++
++######################################################################
++#END	Machine dependent Makefile fragment for arm64
++######################################################################
+diff --git a/san/conf/files.arm64 b/san/conf/files.arm64
+new file mode 100644
+index 0000000..9fa8521
+--- /dev/null
++++ b/san/conf/files.arm64
+@@ -0,0 +1,2 @@
++# Darwinos lite6: KASAN is not supported on arm64 in the open-source tree.
++# options
