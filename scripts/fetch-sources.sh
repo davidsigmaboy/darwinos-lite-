@@ -20,4 +20,11 @@ fetch xnu "$XNU_TAG"
 for r in dtrace AvailabilityVersions; do
   [ -d "$r" ] || git clone --depth 1 "$ORG/$r.git" "$r" || echo "skip $r"
 done
+
+# Заголовок os/firehose_buffer_private.h нужен ядру (bsd/kern/subr_log.c), а лежит в libdispatch.
+# Для KERNEL-сборки ему достаточно stdint.h, поэтому кладём его в EXTERNAL_HEADERS.
+fetch libdispatch libdispatch-913.1.6
+mkdir -p xnu/EXTERNAL_HEADERS/os
+cp libdispatch/os/firehose_buffer_private.h xnu/EXTERNAL_HEADERS/os/ \
+  || echo "не удалось скопировать firehose_buffer_private.h"
 echo "XNU: $XNU_TAG в src/xnu"
