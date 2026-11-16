@@ -26,13 +26,15 @@ make SDKROOT="$SDKROOT" ARCH_CONFIGS="$ARCH_CONFIGS" \
      DSTROOT="$OUT" BUILD_WERROR=0 "$@" > "$OUT/build.log" 2>&1
 RC=$?
 if [ $RC -ne 0 ]; then
-  echo "=== первая ошибка (контекст) ==="
-  grep -nE "error:|\*\*\*|fatal|No such file|not found|Undefined|cannot" "$OUT/build.log" \
-    | grep -vE "ctfconvert|ctfmerge|ctf_insert|xcrun: error" | head -n 5
-  N=$(grep -nE "error:|\*\*\*" "$OUT/build.log" | grep -vE "ctf|xcrun: error" | head -n 1 | cut -d: -f1)
-  [ -n "$N" ] && sed -n "$((N>30?N-30:1)),$((N+5))p" "$OUT/build.log"
-  echo "=== конец лога ==="
-  tail -n 25 "$OUT/build.log"
+  echo "=== ERRORS ==="
+  # параллельная сборка перемешивает вывод, поэтому берём только шаблон файл:строка:колонка: error
+  grep -aoE "[A-Za-z0-9_/.+-]+\.(c|cpp|cc|m|s|S|h|hpp):[0-9]+:[0-9]+: (fatal )?error: .{0,160}" "$OUT/build.log" \
+    | sed 's#^.*/src/xnu/##' | sort -u | head -n 40
+  echo "=== FAILED TARGETS ==="
+  grep -aoE "make\[[0-9]+\]: \*\*\* \[[^]]+\.(o|a|kext|c|h)\] Error [0-9]+" "$OUT/build.log" | sort -u | head -n 20
+  echo "=== LINK/OTHER ==="
+  grep -aE "^ld: |Undefined symbols|clang: error|No rule to make|command not found|ModuleNotFound|Traceback|SyntaxError" "$OUT/build.log" | sort -u | head -n 20
+  echo "=== END ==="
 fi
 echo "make rc=$RC (полный лог: build/build.log)"
 exit $RC
