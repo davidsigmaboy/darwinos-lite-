@@ -11,3 +11,16 @@ index 312952a..47a8a09 100644
  
  		break;
  #else /* __arm64__ */
+diff --git a/osfmk/arm64/proc_reg.h b/osfmk/arm64/proc_reg.h
+index a6971fa..96cb80f 100644
+--- a/osfmk/arm64/proc_reg.h
++++ b/osfmk/arm64/proc_reg.h
+@@ -521,6 +521,8 @@
+ #define MPIDR_AFF0_MASK				0xFF
+ #define MPIDR_AFF1_MASK				0xFF00
+ #define MPIDR_AFF2_MASK				0xFF0000
++#define MPIDR_PNE_SHIFT				16	/* Darwinos lite6: missing from open-source tree */
++#define MPIDR_PNE				(1ULL << MPIDR_PNE_SHIFT)
+ 
+ /*
+  * We currently use a 3 level page table (rather than the full 4
