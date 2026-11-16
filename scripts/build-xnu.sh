@@ -38,9 +38,9 @@ if [ $RC -ne 0 ]; then
   GA=$(find "$XNU/BUILD" -name genassym.o 2>/dev/null | head -n 1)
   if [ -n "$GA" ]; then
     echo "file: $GA"
-    grep -a -m4 -B2 -A3 "DEFINITION__define__" "$GA" | cat -A | cut -c1-160 | head -n 30
+    grep -a -m4 -B2 -A3 "DEFINITION__define__" "$GA" | cat -vet | cut -c1-160 | head -n 30
     AS="$(dirname "$GA")/assym.s"
-    [ -f "$AS" ] && { echo "--- assym.s head ---"; head -n 8 "$AS" | cat -A | cut -c1-160; }
+    [ -f "$AS" ] && { echo "--- assym.s head ---"; head -n 8 "$AS" | cat -vet | cut -c1-160; }
   fi
   echo "=== END ==="
 fi
