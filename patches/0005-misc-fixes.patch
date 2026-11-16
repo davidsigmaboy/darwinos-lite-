@@ -1,3 +1,20 @@
+diff --git a/bsd/dev/arm/kern_machdep.c b/bsd/dev/arm/kern_machdep.c
+index 312952a..47a8a09 100644
+--- a/bsd/dev/arm/kern_machdep.c
++++ b/bsd/dev/arm/kern_machdep.c
+@@ -68,7 +68,7 @@ grade_binary(cpu_type_t exectype, cpu_subtype_t execsubtype)
+ 				return 8;
+ 			}
+ 			break;
+-
++		}	/* Darwinos lite6: closing brace stripped from the open-source tree */
+ 
+ 		break;
+ #else /* __arm64__ */
+diff --git a/bsd/kern/__pycache__/makekdebugevents.cpython-313.pyc b/bsd/kern/__pycache__/makekdebugevents.cpython-313.pyc
+new file mode 100644
+index 0000000..94bb19b
+Binary files /dev/null and b/bsd/kern/__pycache__/makekdebugevents.cpython-313.pyc differ
 diff --git a/tools/lldbmacros/__pycache__/xnudefines.cpython-313.pyc b/tools/lldbmacros/__pycache__/xnudefines.cpython-313.pyc
 new file mode 100644
 index 0000000..5925f13
