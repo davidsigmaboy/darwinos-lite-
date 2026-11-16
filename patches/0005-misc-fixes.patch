@@ -11,6 +11,41 @@ index 312952a..47a8a09 100644
  
  		break;
  #else /* __arm64__ */
+diff --git a/bsd/net/if_ipsec.c b/bsd/net/if_ipsec.c
+index 0984205..aeccbf8 100644
+--- a/bsd/net/if_ipsec.c
++++ b/bsd/net/if_ipsec.c
+@@ -385,7 +385,11 @@ ipsec_interface_needs_netagent(ifnet_t interface)
+ 		return (FALSE);
+ 	}
+ 
++#if IPSEC_NEXUS
+ 	return (pcb->ipsec_needs_netagent == true);
++#else /* !IPSEC_NEXUS */
++	return (FALSE);
++#endif /* IPSEC_NEXUS */
+ }
+ 
+ static errno_t
+diff --git a/osfmk/arm/commpage/commpage.c b/osfmk/arm/commpage/commpage.c
+index 27cfadb..7f3efe1 100644
+--- a/osfmk/arm/commpage/commpage.c
++++ b/osfmk/arm/commpage/commpage.c
+@@ -50,8 +50,12 @@
+ #include <arm/rtclock.h>
+ #include <libkern/OSAtomic.h>
+ #include <stdatomic.h>
+-#include <kern/remote_time.h>
+-#include <machine/machine_remote_time.h>
++/* Darwinos lite6: kern/remote_time.h is not part of the open-source tree */
++struct bt_params {
++	volatile uint64_t base_local_ts;
++	volatile uint64_t base_remote_ts;
++	volatile double rate;
++};
+ 
+ #include <sys/kdebug.h>
+ 
 diff --git a/osfmk/arm64/proc_reg.h b/osfmk/arm64/proc_reg.h
 index a6971fa..96cb80f 100644
 --- a/osfmk/arm64/proc_reg.h
