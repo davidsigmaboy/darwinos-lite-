@@ -71,3 +71,16 @@ index a6971fa..96cb80f 100644
  
  /*
   * We currently use a 3 level page table (rather than the full 4
+diff --git a/osfmk/vm/vm_object.c b/osfmk/vm/vm_object.c
+index 821929f..157fed2 100644
+--- a/osfmk/vm/vm_object.c
++++ b/osfmk/vm/vm_object.c
+@@ -352,7 +352,7 @@ _vm_object_allocate(
+ 		"vm_object_allocate, object 0x%X size 0x%X\n",
+ 		object, size, 0,0,0);
+ 
+-	*object = vm_object_template;
++	bcopy(&vm_object_template, object, sizeof (*object));	/* Darwinos lite6: const member, modern clang rejects struct assignment */
+ 	vm_page_queue_init(&object->memq);
+ #if UPL_DEBUG || CONFIG_IOSCHED
+ 	queue_init(&object->uplq);
