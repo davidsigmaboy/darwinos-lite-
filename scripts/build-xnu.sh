@@ -34,6 +34,14 @@ if [ $RC -ne 0 ]; then
   grep -aoE "make\[[0-9]+\]: \*\*\* \[[^]]+\.(o|a|kext|c|h)\] Error [0-9]+" "$OUT/build.log" | sort -u | head -n 20
   echo "=== LINK/OTHER ==="
   grep -aE "^ld: |Undefined symbols|clang: error|No rule to make|command not found|ModuleNotFound|Traceback|SyntaxError" "$OUT/build.log" | sort -u | head -n 20
+  echo "=== GENASSYM SAMPLE ==="
+  GA=$(find "$XNU/BUILD" -name genassym.o 2>/dev/null | head -n 1)
+  if [ -n "$GA" ]; then
+    echo "file: $GA"
+    grep -a -m4 -B2 -A3 "DEFINITION__define__" "$GA" | cat -A | cut -c1-160 | head -n 30
+    AS="$(dirname "$GA")/assym.s"
+    [ -f "$AS" ] && { echo "--- assym.s head ---"; head -n 8 "$AS" | cat -A | cut -c1-160; }
+  fi
   echo "=== END ==="
 fi
 echo "make rc=$RC (полный лог: build/build.log)"
