@@ -46,6 +46,18 @@ index 27cfadb..7f3efe1 100644
  
  #include <sys/kdebug.h>
  
+diff --git a/osfmk/arm/cpu_capabilities.h b/osfmk/arm/cpu_capabilities.h
+index b686c0e..e2bf56f 100644
+--- a/osfmk/arm/cpu_capabilities.h
++++ b/osfmk/arm/cpu_capabilities.h
+@@ -208,6 +208,7 @@ extern vm_address_t				sharedpage_rw_addr;
+ 
+ #define _COMM_PAGE_NEWTIMEOFDAY_DATA		(_COMM_PAGE_START_ADDRESS+0x120)	// used by gettimeofday(). Currently, sizeof(new_commpage_timeofday_data_t) = 40.
+ 
++#define _COMM_PAGE_REMOTETIME_PARAMS		(_COMM_PAGE_START_ADDRESS+0x180)	// Darwinos lite6: struct bt_params (24 bytes), definition missing from open-source tree
+ #define _COMM_PAGE_END				(_COMM_PAGE_START_ADDRESS+0x1000)	// end of common page
+ 
+ #endif /* _ARM_CPU_CAPABILITIES_H */
 diff --git a/osfmk/arm64/proc_reg.h b/osfmk/arm64/proc_reg.h
 index a6971fa..96cb80f 100644
 --- a/osfmk/arm64/proc_reg.h
