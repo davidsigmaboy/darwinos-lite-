@@ -71,6 +71,19 @@ index a6971fa..96cb80f 100644
  
  /*
   * We currently use a 3 level page table (rather than the full 4
+diff --git a/osfmk/conf/Makefile.template b/osfmk/conf/Makefile.template
+index d533b91..157c1cf 100644
+--- a/osfmk/conf/Makefile.template
++++ b/osfmk/conf/Makefile.template
+@@ -180,7 +180,7 @@ genassym.o: $(SOURCE_DIR)/$(COMPONENT)/$(GENASSYM_LOCATION)/genassym.c
+ 	$(_v)${GENASSYM_KCC} ${CFLAGS} ${CFLAGS_NOLTO_FLAG} -MD -S -o ${@} ${INCFLAGS} $<
+ 
+ assym.s: genassym.o
+-	$(_v)sed -e '/^[[:space:]]*DEFINITION__define__/!d;{N;s/\n//;}' -e 's/^[[:space:]]*DEFINITION__define__\([^:]*\):.*ascii.*\"[\$$]*\([-0-9\#]*\)\".*$$/#define \1 \2/' -e 'p'  -e 's/#//2' -e 's/^[[:space:]]*#define \([A-Za-z0-9_]*\)[[:space:]]*[\$$#]*\([-0-9]*\).*$$/#define \1_NUM \2/' genassym.o > $@
++	$(_v)python3 $(SRCROOT)/tools/darwinos/genassym2assym.py genassym.o > $@	# Darwinos lite6: modern clang output format
+ 
+ ${SOBJS}: assym.s
+ 
 diff --git a/osfmk/vm/vm_object.c b/osfmk/vm/vm_object.c
 index 821929f..157fed2 100644
 --- a/osfmk/vm/vm_object.c
@@ -84,3 +97,102 @@ index 821929f..157fed2 100644
  	vm_page_queue_init(&object->memq);
  #if UPL_DEBUG || CONFIG_IOSCHED
  	queue_init(&object->uplq);
+diff --git a/tools/darwinos/genassym2assym.py b/tools/darwinos/genassym2assym.py
+new file mode 100755
+index 0000000..1b26264
+--- /dev/null
++++ b/tools/darwinos/genassym2assym.py
+@@ -0,0 +1,93 @@
++#!/usr/bin/env python3
++"""Darwinos lite6: build assym.s from genassym.o (compiler -S output).
++
++The stock XNU Makefile pipes genassym.o through sed and expects old clang
++output (`DEFINITION__define__NAME:  .ascii "#123"`). Modern clang re-emits the
++inline asm through the integrated assembler, e.g.
++
++    DEFINITION__define__NAME:
++            .byte   49
++            .byte   50
++
++so we decode `.byte` / `.ascii` / `.asciz` payloads ourselves.
++
++Output per symbol (same as the old sed rules):
++    #define NAME #VALUE
++    #define NAME_NUM VALUE
++"""
++import re
++import sys
++
++LABEL = re.compile(r'^\s*DEFINITION__define__([A-Za-z0-9_]+):(.*)$')
++BYTE = re.compile(r'^\s*\.(?:byte|ascii|asciz|string)\b\s*(.*)$')
++
++
++def decode_string(tok):
++    tok = tok.strip()
++    if tok.startswith('"') and tok.endswith('"') and len(tok) >= 2:
++        body = tok[1:-1]
++        return bytes(body, 'latin-1').decode('unicode_escape')
++    return None
++
++
++def decode_payload(directive, args):
++    out = ''
++    if directive == 'byte':
++        for part in args.split(','):
++            part = part.split(';')[0].split('@')[0].strip()
++            if part:
++                out += chr(int(part, 0) & 0xFF)
++    else:
++        s = decode_string(args.split(';')[0].strip())
++        if s is None:
++            raise ValueError('cannot parse: ' + args)
++        out += s
++    return out
++
++
++def main(path):
++    syms = []          # (name, payload)
++    cur = None
++    for raw in open(path, 'r', errors='replace'):
++        line = raw.rstrip('\n')
++        m = LABEL.match(line)
++        if m:
++            if cur is not None:
++                syms.append(cur)
++            cur = [m.group(1), '']
++            rest = m.group(2).strip()
++            if rest:
++                dm = re.match(r'\.(byte|ascii|asciz|string)\b\s*(.*)$', rest)
++                if dm:
++                    cur[1] += decode_payload(dm.group(1), dm.group(2))
++            continue
++        if cur is None:
++            continue
++        if 'InlineAsm End' in line:
++            syms.append(cur)
++            cur = None
++            continue
++        dm = re.match(r'^\s*\.(byte|ascii|asciz|string)\b\s*(.*)$', line)
++        if dm:
++            cur[1] += decode_payload(dm.group(1), dm.group(2))
++    if cur is not None:
++        syms.append(cur)
++
++    seen = set()
++    for name, payload in syms:
++        val = payload.strip().lstrip('$#').strip()
++        if not re.fullmatch(r'-?[0-9]+', val):
++            sys.stderr.write('genassym2assym: bad value for %s: %r\n' % (name, payload))
++            sys.exit(1)
++        if name in seen:
++            continue
++        seen.add(name)
++        print('#define %s #%s' % (name, val))
++        print('#define %s_NUM %s' % (name, val))
++    if not seen:
++        sys.stderr.write('genassym2assym: no DEFINITION__define__ symbols found\n')
++        sys.exit(1)
++
++
++if __name__ == '__main__':
++    main(sys.argv[1])
