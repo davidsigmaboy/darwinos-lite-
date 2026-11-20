@@ -58,6 +58,19 @@ index b686c0e..e2bf56f 100644
  #define _COMM_PAGE_END				(_COMM_PAGE_START_ADDRESS+0x1000)	// end of common page
  
  #endif /* _ARM_CPU_CAPABILITIES_H */
+diff --git a/osfmk/arm/proc_reg.h b/osfmk/arm/proc_reg.h
+index 28a99e3..19ff9bf 100644
+--- a/osfmk/arm/proc_reg.h
++++ b/osfmk/arm/proc_reg.h
+@@ -296,7 +296,7 @@
+ 
+ #define	DFSR_WRITE		0x00000800	/* write data abort fault */
+ 
+-#if defined (ARMA7) || defined (APPLE_ARM64_ARCH_FAMILY)
++#if defined (ARMA7) || defined (APPLE_ARM64_ARCH_FAMILY) || defined (APPLETWISTER)	/* Darwinos lite6: generic arm64 uses the APPLETWISTER geometry */
+ 
+ #define TEST_FSR_VMFAULT(status)	\
+ 				(((status) == FSR_PFAULT)	\
 diff --git a/osfmk/arm64/proc_reg.h b/osfmk/arm64/proc_reg.h
 index a6971fa..96cb80f 100644
 --- a/osfmk/arm64/proc_reg.h
